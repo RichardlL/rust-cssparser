@@ -289,12 +289,23 @@ impl<'a> Tokenizer<'a> {
             position = 0;
             line_number = 1;
         }
-        let (position, line_number) =
-            self.input[position..target]
-            .bytes()
-            .enumerate()
-            .filter(|&(_, i)| i as char == '\n')
-            .fold((position, line_number),|(pos, count), (i,_)| (i, count + 1));
+        let mut source = &self.input[position..target];
+        source
+        while let Some(newline_position) = source.find(&['\n', '\r', '\x0C'][..]) {
+            let offset = newline_position +
+            while {
+
+}
+            if source[newline_position..].starts_with("\r\n") {
+                2
+            } else {
+                1
+            };
+            source = &source[offset..];
+            position += offset;
+            line_number += 1;
+        }
+        debug_assert!(position <= target);
         self.last_known_line_break.set((line_number, position));
         SourceLocation {
             line: line_number,
